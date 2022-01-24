@@ -33,7 +33,8 @@ LOCAL_SHARED_LIBRARIES := libbase \
                           libutils \
                           libaudiohal
 
-LOCAL_HEADER_LIBRARIES := libhardware_headers
+LOCAL_HEADER_LIBRARIES := libaudiohal_headers \
+                          libhardware_headers
 
 LOCAL_CFLAGS := -Wno-unused-parameter
 
