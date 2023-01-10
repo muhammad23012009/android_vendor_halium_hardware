@@ -55,8 +55,12 @@ static uint32_t out_get_sample_rate(const struct audio_stream *stream)
 
     struct wrapper_stream_out *out = (struct wrapper_stream_out *)stream;
     uint32_t rate = 0;
+    audio_config_base_t configBase = {};
 
-    out->streamIface->getSampleRate(&rate);
+    if (out->streamIface->getAudioProperties(&configBase) == OK) {
+        rate = configBase.sample_rate;
+    }
+
     return rate;
 }
 
@@ -82,9 +86,12 @@ static audio_channel_mask_t out_get_channels(const struct audio_stream *stream)
     ALOGV("out_get_channels");
 
     struct wrapper_stream_out *out = (struct wrapper_stream_out *)stream;
-    audio_channel_mask_t mask = 0;
+    audio_channel_mask_t mask = {};
+    audio_config_base_t configBase = {};
 
-    out->streamIface->getChannelMask(&mask);
+    if (out->streamIface->getAudioProperties(&configBase) == OK) {
+        mask = configBase.channel_mask;
+    }
     return mask;
 }
 
@@ -94,8 +101,11 @@ static audio_format_t out_get_format(const struct audio_stream *stream)
 
     struct wrapper_stream_out *out = (struct wrapper_stream_out *)stream;
     audio_format_t format = {};
+    audio_config_base_t configBase = {};
 
-    out->streamIface->getFormat(&format);
+    if (out->streamIface->getAudioProperties(&configBase) == OK) {
+        format = configBase.format;
+    }
     return format;
 }
 
@@ -228,8 +238,11 @@ static uint32_t in_get_sample_rate(const struct audio_stream *stream)
 {
     struct wrapper_stream_in *in = (struct wrapper_stream_in *)stream;
     uint32_t rate = 0;
+    audio_config_base_t configBase = {};
 
-    in->streamIface->getSampleRate(&rate);
+    if (in->streamIface->getAudioProperties(&configBase) == OK) {
+        rate = configBase.sample_rate;
+    }
     ALOGV("in_get_sample_rate: %d", rate);
     return rate;
 }
@@ -243,9 +256,12 @@ static int in_set_sample_rate(struct audio_stream *stream, uint32_t rate)
 static audio_channel_mask_t in_get_channels(const struct audio_stream *stream)
 {
     struct wrapper_stream_in *in = (struct wrapper_stream_in *)stream;
-    audio_channel_mask_t channels = 0;
+    audio_channel_mask_t channels = {};
+    audio_config_base_t configBase = {};
 
-    in->streamIface->getChannelMask(&channels);
+    if (in->streamIface->getAudioProperties(&configBase) == OK) {
+        channels = configBase.channel_mask;
+    }
     ALOGV("in_get_channels: %d", channels);
     return channels;
 }
@@ -254,8 +270,11 @@ static audio_format_t in_get_format(const struct audio_stream *stream)
 {
     struct wrapper_stream_in *in = (struct wrapper_stream_in *)stream;
     audio_format_t format = {};
+    audio_config_base_t configBase = {};
 
-    in->streamIface->getFormat(&format);
+    if (in->streamIface->getAudioProperties(&configBase) == OK) {
+        format = configBase.format;
+    }
     ALOGV("in_get_format: %d", format);
     return format;
 }
@@ -552,7 +571,7 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
 
     status_t result = adev->deviceIface->openInputStream(handle, devices, config,
                                                          flags, address, source,
-                                                         0/*outputDevice*/, ""/*outputDeviceAddress*/,
+                                                         {}/*outputDevice*/, ""/*outputDeviceAddress*/,
                                                          &in->streamIface);
     if (result != OK) {
         ALOGE("openInputStream() error %d", result);
@@ -604,7 +623,7 @@ static int adev_dump(const audio_hw_device_t *device, int fd)
 {
     ALOGV("adev_dump");
     struct wrapper_audio_device *adev = (struct wrapper_audio_device *)device;
-    return adev->deviceIface->dump(fd);
+    return adev->deviceIface->dump(fd, {}/* args */);
 }
 
 static int adev_close(hw_device_t *device)
