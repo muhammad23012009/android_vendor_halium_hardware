@@ -33,7 +33,12 @@ LOCAL_SHARED_LIBRARIES := libbase \
                           libutils \
                           libaudiohal
 
+LOCAL_C_INCLUDES := frameworks/av/media/libaudioclient/include \
+                    frameworks/av/media/libaudiohal/include \
+                    frameworks/av/media/liberror/include
+
 LOCAL_HEADER_LIBRARIES := libaudiohal_headers \
+                          libaudioclient_headers \
                           libhardware_headers
 
 LOCAL_CFLAGS := -Wno-unused-parameter

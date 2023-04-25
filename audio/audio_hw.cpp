@@ -619,6 +619,30 @@ static void adev_close_input_stream(struct audio_hw_device *dev,
     delete in;
 }
 
+static int adev_create_audio_patch(struct audio_hw_device *dev,
+                                   unsigned int num_sources,
+                                   const struct audio_port_config *sources,
+                                   unsigned int num_sinks,
+                                   const struct audio_port_config *sinks,
+                                   audio_patch_handle_t *handle)
+{
+    ALOGV("adev_create_audio_patch");
+
+    struct wrapper_audio_device *adev = (struct wrapper_audio_device *)dev;
+    return adev->deviceIface->createAudioPatch(num_sources, sources,
+                                               num_sinks, sinks,
+                                               handle);
+}
+
+static int adev_release_audio_patch(struct audio_hw_device *dev,
+                                    audio_patch_handle_t handle)
+{
+    ALOGV("adev_release_audio_patch");
+
+    struct wrapper_audio_device *adev = (struct wrapper_audio_device *)dev;
+    return adev->deviceIface->releaseAudioPatch(handle);
+}
+
 static int adev_dump(const audio_hw_device_t *device, int fd)
 {
     ALOGV("adev_dump");
@@ -674,6 +698,8 @@ static int adev_open(const hw_module_t* module, const char* name,
     adev->hw_device.close_output_stream = adev_close_output_stream;
     adev->hw_device.open_input_stream = adev_open_input_stream;
     adev->hw_device.close_input_stream = adev_close_input_stream;
+    adev->hw_device.create_audio_patch = adev_create_audio_patch;
+    adev->hw_device.release_audio_patch = adev_release_audio_patch;
     adev->hw_device.dump = adev_dump;
 
     *device = &adev->hw_device.common;
